@@ -24,10 +24,10 @@ class Heroku::Command::Apps
     heroku.put("/apps/#{app}", :app => { :tier => tier })
     if tier == "basic"
       display "App upgraded to Basic ($0.025 per dyno hour)"
-      display "Total dyno cost: $#{processes.count}*0.025"
+      display "Total dyno cost: $#{processes.count*0.025}"
     elsif tier == "production"
       display "App upgraded to Production ($0.05 per dyno hour)"
-      display "Total dyno cost: $#{processes.count}*0.05"
+      display "Total dyno cost: $#{processes.count*0.05}"
     elsif tier == "dev"
       display "App downgraded to Dev (free)"
     else 
