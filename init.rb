@@ -17,7 +17,6 @@ class Heroku::Command::Apps
     display "App updated to #{tier}"
   end
   
-  # override info to support tier
   def info
     validate_arguments!
     app_data = api.get_app(app).body
