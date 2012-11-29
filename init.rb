@@ -19,9 +19,9 @@ class Heroku::Command::Apps
     unless tier = shift_argument
       raise(Heroku::Command::CommandFailed, "Usage: heroku apps:upgrade [tier]")
     end
+    processes = api.get_ps(app).body
 
     heroku.put("/apps/#{app}", :app => { :tier => tier })
-    processes = api.get_ps
     if tier == "basic"
       display "App upgraded to Basic ($0.025 per dyno hour)"
       display "Total dyno cost: $#{processes.count}*0.025"
@@ -54,9 +54,9 @@ class Heroku::Command::Apps
     unless tier = shift_argument
       raise(Heroku::Command::CommandFailed, "Usage: heroku apps:upgrade [tier]")
     end
+    processes = api.get_ps(app).body
 
     heroku.put("/apps/#{app}", :app => { :tier => tier })
-    processes = api.get_ps
     if tier == "basic"
       display "App downgraded to Basic ($0.025 per dyno hour)"
       display "Total dyno cost: $#{processes.count}*0.025"
