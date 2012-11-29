@@ -1,15 +1,75 @@
 class Heroku::Command::Apps
+
+  # apps:upgrade
+  #
+  # upgrade app to Basic or Production tier
+  #
+  # ## App Tiers
+  # Dev:         Always free. Idles after 1 hour.
+  # Basic:       Custom domains. Never idles. 1 dyno per process. $0.025 per dyno hour
+  # Production:  Scale processes past 1 dyno. Unlimited support. $0.05 per dyno hour
+  #
+  # Examples:
+  #
+  # $ heroku apps:upgrade basic
+  # App upgraded to Basic ($0.025 per dyno hour)
+  # Total dyno cost: $0.075 per hour
+  #
   def upgrade
     unless tier = shift_argument
       raise(Heroku::Command::CommandFailed, "Usage: heroku apps:upgrade [tier]")
     end
 
     heroku.put("/apps/#{app}", :app => { :tier => tier })
-    display "App updated to #{tier}"
+    processes = api.get_ps
+    if tier == "basic"
+      display "App upgraded to Basic ($0.025 per dyno hour)"
+      display "Total dyno cost: $#{processes.count}*0.025"
+    elsif tier == "production"
+      display "App upgraded to Production ($0.05 per dyno hour)"
+      display "Total dyno cost: $#{processes.count}*0.05"
+    elsif tier == "dev"
+      display "App downgraded to Dev (free)"
+    else 
+      display "App upgraded to #{tier}"
+    end
   end
 
-  alias_command "apps:upgrade", "apps:downgrade"
-  
+  # apps:downgrade
+  #
+  # downgrade app to Dev or Basic tier
+  #
+  # ## App Tiers
+  # Dev:         Always free. Idles after 1 hour.
+  # Basic:       Custom domains. Never idles. 1 dyno per process. $0.025 per dyno hour
+  # Production:  Scale processes past 1 dyno. Unlimited support. $0.05 per dyno hour
+  #
+  # Examples:
+  #
+  # $ heroku apps:upgrade basic
+  # App upgraded to Basic ($0.025 per dyno hour)
+  # Total dyno cost: $0.075 per hour
+  #
+  def downgrade
+    unless tier = shift_argument
+      raise(Heroku::Command::CommandFailed, "Usage: heroku apps:upgrade [tier]")
+    end
+
+    heroku.put("/apps/#{app}", :app => { :tier => tier })
+    processes = api.get_ps
+    if tier == "basic"
+      display "App downgraded to Basic ($0.025 per dyno hour)"
+      display "Total dyno cost: $#{processes.count}*0.025"
+    elsif tier == "production"
+      display "App downgraded to Production ($0.05 per dyno hour)"
+      display "Total dyno cost: $#{processes.count}*0.05"
+    elsif tier == "dev"
+      display "App downgraded to Dev (free)"
+    else 
+      display "App downgraded to #{tier}"
+    end
+  end
+
   def info
     validate_arguments!
     app_data = api.get_app(app).body
