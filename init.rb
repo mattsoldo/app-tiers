@@ -1,13 +1,22 @@
 class Heroku::Command::Apps
-  def update
+  def upgrade
     unless tier = shift_argument
-      raise(Heroku::Command::CommandFailed, "Usage: heroku apps:update [tier]")
+      raise(Heroku::Command::CommandFailed, "Usage: heroku apps:upgrade [tier]")
     end
 
     heroku.put("/apps/#{app}", :app => { :tier => tier })
     display "App updated to #{tier}"
   end
 
+  def downgrade
+    unless tier = shift_argument
+      raise(Heroku::Command::CommandFailed, "Usage: heroku apps:upgrade [tier]")
+    end
+
+    heroku.put("/apps/#{app}", :app => { :tier => tier })
+    display "App updated to #{tier}"
+  end
+  
   # override info to support tier
   def info
     validate_arguments!
