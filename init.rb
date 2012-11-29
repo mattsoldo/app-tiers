@@ -8,7 +8,7 @@ class Heroku::Command::Apps
     display "App updated to #{tier}"
   end
 
-  alias_command "upgrade", "downgrade"
+  alias_command "apps:upgrade", "apps:downgrade"
   
   def info
     validate_arguments!
